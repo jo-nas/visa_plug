@@ -1,0 +1,5 @@
+openhtf >= 1.0.3
+pyvisa >= 1.8
+pyvisa-py >= 0.2
+pyusb >= 1.0
+pyserial >= 3.3

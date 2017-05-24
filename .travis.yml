@@ -1,0 +1,13 @@
+os:
+  - linux
+
+language:
+  - python
+
+python:
+  - 2.7
+
+script:
+  - pip install -r dev-requirements.txt
+  - python setup.py install
+  - pytest
