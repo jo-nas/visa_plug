@@ -150,30 +150,33 @@ class VisaPlug(plugs.BasePlug):
 
     @staticmethod
     def find_device(ident_code=""):
+        def cleanup(x):
+            return x.replace("\n", "").replace("\r", "")
+
         rm = visa.ResourceManager("@py")
-
         for port in rm.list_resources():
-            for read_termination in [None, "\r\n", "\n", "\r"]:
-                try:
-                    device = rm.open_resource(port, read_termination=read_termination)
-                    device.timeout = 10000
-                    idn = device.query("*IDN?").split(",")
+            try:
+                device = rm.open_resource(port)
 
-                    # device sends no serial number
-                    if len(idn) <= 3:
-                        idn[3], idn[2] = idn[2], ""
+                response = cleanup(device.query("*IDN?"))
 
-                    if any(ident_code in s for s in idn) or port is ident_code:
-                        yield {
-                            'vendor': idn[0],
-                            'device_name': idn[1],
-                            'serial_number': idn[2],
-                            'firmware_version': idn[3],
-                            'read_termination': read_termination,
-                            'port': port
-                        }
+                if response == "":
+                    continue  # device don't exist
 
-                except:
-                    continue
-        else:
-            raise VisaDeviceException("Device can't be found.")
+                idn = response.split(",")
+
+                # device sends no serial number
+                if len(idn) <= 3:
+                    idn.append(idn[2])
+                    idn[2] = ""
+
+                if any(ident_code in s for s in idn) or port is ident_code:
+                    yield {
+                        'vendor': idn[0],
+                        'device_name': idn[1],
+                        'serial_number': idn[2],
+                        'firmware_version': idn[3],
+                        'port': port
+                    }
+            except:
+                continue
