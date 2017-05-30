@@ -1,23 +1,33 @@
 # -*- coding: utf-8 -*-
 import visa
 import openhtf.plugs as plugs
+from openhtf.util import conf
 
 __author__ = 'Jonas Steinkamp'
 __email__ = 'jonas@steinka.mp'
 __version__ = '0.1.0'
 
 
+conf.declare(
+    'ident_code',
+    description='identification code of the device. port or serial_number or device_name o vendor'
+)
+conf.declare(
+    'read_termination',
+    description='The visa device read_termination.'
+)
+
 class VisaDeviceException(Exception):
     """A basic Visa Device Exception"""
 
 
 class VisaPlug(plugs.BasePlug):
-    def __init__(self, ident_code, **resource_kwargs):
-        self.rm = visa.ResourceManager()
+    def __init__(self, ident_code, read_termination):
+        self.rm = visa.ResourceManager("@py")
 
-        device = self.find_device(ident_code, **resource_kwargs).next()
+        device = self.find_device(ident_code, read_termination).next()
 
-        self.connection = self.rm.open_resource(device["port"], **resource_kwargs)
+        self.connection = self.rm.open_resource(device["port"], read_termination=read_termination)
         self.vendor = device["vendor"]
         self.device_name = device["device_name"]
         self.serial_number = device["serial_number"]
@@ -142,18 +152,18 @@ class VisaPlug(plugs.BasePlug):
         self.sre()
 
     @staticmethod
-    def find_device(ident_code="", **resource_kwargs):
-        rm = visa.ResourceManager()
+    def find_device(ident_code="", read_termination=None):
+        rm = visa.ResourceManager("@py")
 
         for port in rm.list_resources():
             try:
-                idn = rm.open_resource(port, kwargs=resource_kwargs).query("*IDN?").split(",")
+                idn = rm.open_resource(port, read_termination=read_termination).query("*IDN?").split(",")
 
                 # device sends no serial number
                 if len(idn) <= 3:
                     idn[3], idn[2] = idn[2], ""
 
-                if any(ident_code in s for s in idn):
+                if any(ident_code in s for s in idn) or port is ident_code:
                     yield {
                         'vendor': idn[0],
                         'device_name': idn[1],
