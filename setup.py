@@ -4,14 +4,14 @@ import setuptools
 install_requires = [x.strip() for x in open('requirements.txt').readlines()]
 
 setuptools.setup(
-    name="Base plugs",
+    name="visa_plug",
     version="0.1.0",
     url="https://jonas.steinka.mp",
 
     author="Jonas Steinkamp",
     author_email="jonas@steinka.mp",
 
-    description="A package with some basic plugs for the openhtf framework.",
+    description="A package with some basic visa plugs for the openhtf framework.",
     long_description=open('README.md').read(),
 
     classifiers=[
