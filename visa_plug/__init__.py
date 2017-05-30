@@ -156,7 +156,7 @@ class VisaPlug(plugs.BasePlug):
         rm = visa.ResourceManager("@py")
         for port in rm.list_resources():
             try:
-                device = rm.open_resource(port)
+                device = rm.open_resource(port, timeout=2000)
 
                 response = cleanup(device.query("*IDN?"))
 
