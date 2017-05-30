@@ -2,7 +2,7 @@
 import visa
 import openhtf.plugs as plugs
 
-__author__ = """Jonas Steinkamp"""
+__author__ = 'Jonas Steinkamp'
 __email__ = 'jonas@steinka.mp'
 __version__ = '0.1.0'
 
@@ -12,35 +12,16 @@ class VisaDeviceException(Exception):
 
 
 class VisaPlug(plugs.BasePlug):
-    def __init__(self, ident_code, **kwargs):
+    def __init__(self, ident_code, **resource_kwargs):
         self.rm = visa.ResourceManager()
-        self.vendor = None
-        self.serial_number = None
-        self.firmware_version = None
-        self.device_name = None
-        self.connection = None
 
-        for device_name in self.rm.list_resources():
-            try:
-                device = self.rm.open_resource(device_name, kwargs=kwargs)
-                idn = device.query('*IDN?').replace("\n", "").replace("\r", "").split(',')
+        device = self.find_device(ident_code, **resource_kwargs).next()
 
-                # device sends no serial number
-                if len(idn) <= 3:
-                    idn[3], idn[2] = idn[2], ""
-
-                if any(ident_code in s for s in idn):
-                    self.vendor = idn[0]
-                    self.device_name = idn[1]
-                    self.serial_number = idn[2]
-                    self.firmware_version = idn[3]
-                    self.connection = device
-                    break
-            except:
-                continue
-
-        if self.connection is None:
-            raise VisaDeviceException("Device can't be found.")
+        self.connection = self.rm.open_resource(device["port"], **resource_kwargs)
+        self.vendor = device["vendor"]
+        self.device_name = device["device_name"]
+        self.serial_number = device["serial_number"]
+        self.firmware_version = device["firmware_version"]
 
     def tearDown(self):
         self.connection.close()
@@ -161,20 +142,27 @@ class VisaPlug(plugs.BasePlug):
         self.sre()
 
     @staticmethod
-    def find_device(ident_code="", **kwargs):
+    def find_device(ident_code="", **resource_kwargs):
         rm = visa.ResourceManager()
 
-        for device_name in rm.list_resources():
+        for port in rm.list_resources():
             try:
-                idn = rm.open_resource(device_name, kwargs=kwargs).query("*IDN?").split(",")
+                idn = rm.open_resource(port, kwargs=resource_kwargs).query("*IDN?").split(",")
+
+                # device sends no serial number
+                if len(idn) <= 3:
+                    idn[3], idn[2] = idn[2], ""
+
                 if any(ident_code in s for s in idn):
                     yield {
-                        'vendors': idn[0],
+                        'vendor': idn[0],
                         'device_name': idn[1],
                         'serial_number': idn[2],
                         'firmware_version': idn[3],
-                        'port': device_name
+                        'port': port
                     }
 
-            except Exception:
+            except:
                 continue
+        else:
+            raise VisaDeviceException("Device can't be found.")
