@@ -155,7 +155,9 @@ class VisaPlug(plugs.BasePlug):
         for port in rm.list_resources():
             for read_termination in [None, "\r\n", "\n", "\r"]:
                 try:
-                    idn = rm.open_resource(port, read_termination=read_termination).query("*IDN?").split(",")
+                    device = rm.open_resource(port, read_termination=read_termination)
+                    device.timeout = 10000
+                    idn = device.query("*IDN?").split(",")
 
                     # device sends no serial number
                     if len(idn) <= 3:
