@@ -7,6 +7,8 @@ __author__ = 'Jonas Steinkamp'
 __email__ = 'jonas@steinka.mp'
 __version__ = '0.1.0'
 
+# TODO: Add Docstrings and Tests
+
 
 conf.declare(
     'ident_code',
@@ -19,12 +21,13 @@ class VisaDeviceException(Exception):
 
 
 class VisaPlug(plugs.BasePlug):
+    @conf.inject_positional_args
     def __init__(self, ident_code):
         self.rm = visa.ResourceManager("@py")
 
         device = self.find_device(ident_code).next()
 
-        self.connection = self.rm.open_resource(device["port"], read_termination=device["read_termination"])
+        self.connection = self.rm.open_resource(device["port"])
         self.vendor = device["vendor"]
         self.device_name = device["device_name"]
         self.serial_number = device["serial_number"]
