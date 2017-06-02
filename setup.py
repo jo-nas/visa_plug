@@ -4,7 +4,7 @@ import setuptools
 install_requires = [x.strip() for x in open('requirements.txt').readlines()]
 
 setuptools.setup(
-    name="visa_plug",
+    name="Visa Plug",
     version="0.1.0",
     url="https://jonas.steinka.mp",
 

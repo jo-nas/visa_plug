@@ -15,6 +15,12 @@ conf.declare(
     description='identification code of the device. port or serial_number or device_name o vendor'
 )
 
+conf.declare(
+    'timeout',
+    default_value=60000,
+    description='timeout for the device.'
+)
+
 
 class VisaDeviceException(Exception):
     """A basic Visa Device Exception"""
@@ -22,12 +28,12 @@ class VisaDeviceException(Exception):
 
 class VisaPlug(plugs.BasePlug):
     @conf.inject_positional_args
-    def __init__(self, ident_code):
+    def __init__(self, ident_code, timeout):
         self.rm = visa.ResourceManager("@py")
 
-        device = self.find_device(ident_code).next()
+        device = self.find_device(ident_code, timeout).next()
 
-        self.connection = self.rm.open_resource(device["port"])
+        self.connection = self.rm.open_resource(device["port"], timeout=timeout)
         self.vendor = device["vendor"]
         self.device_name = device["device_name"]
         self.serial_number = device["serial_number"]
@@ -92,7 +98,7 @@ class VisaPlug(plugs.BasePlug):
         return self.esr()
 
     # ------------------------------------------------------------------------------------------------------------------
-    # get identification
+    # self test
     # ------------------------------------------------------------------------------------------------------------------
     def tst(self):
         return self.query("*TST?")
@@ -152,14 +158,14 @@ class VisaPlug(plugs.BasePlug):
         self.sre()
 
     @staticmethod
-    def find_device(ident_code=""):
+    def find_device(ident_code="", timeout):
         def cleanup(x):
             return x.replace("\n", "").replace("\r", "")
 
         rm = visa.ResourceManager("@py")
         for port in rm.list_resources():
             try:
-                device = rm.open_resource(port, timeout=2000)
+                device = rm.open_resource(port, timeout=timeout)
 
                 response = cleanup(device.query("*IDN?"))
 
