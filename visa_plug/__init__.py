@@ -158,7 +158,7 @@ class VisaPlug(plugs.BasePlug):
         self.sre()
 
     @staticmethod
-    def find_device(ident_code="", timeout):
+    def find_device(ident_code="", timeout=None):
         def cleanup(x):
             return x.replace("\n", "").replace("\r", "")
 
