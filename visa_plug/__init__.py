@@ -27,13 +27,15 @@ class VisaDeviceException(Exception):
 
 
 class VisaPlug(plugs.BasePlug):
+    termination = None
+
     @conf.inject_positional_args
     def __init__(self, ident_code, timeout):
         self.rm = visa.ResourceManager("@py")
 
         device = self.find_device(ident_code, timeout).next()
 
-        self.connection = self.rm.open_resource(device["port"], timeout=timeout)
+        self.connection = self.rm.open_resource(device["port"], timeout=timeout, read_termination=VisaPlug.termination)
         self.vendor = device["vendor"]
         self.device_name = device["device_name"]
         self.serial_number = device["serial_number"]
@@ -165,7 +167,7 @@ class VisaPlug(plugs.BasePlug):
         rm = visa.ResourceManager("@py")
         for port in rm.list_resources():
             try:
-                device = rm.open_resource(port, timeout=timeout)
+                device = rm.open_resource(port, timeout=timeout, read_termination=VisaPlug.termination)
 
                 response = cleanup(device.query("*IDN?"))
 

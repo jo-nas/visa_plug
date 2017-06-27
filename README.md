@@ -21,10 +21,10 @@ python setup.py install
 ```
 
 ## Requirements
-pyvisa
-pyvisa-py
-pyusb
-pyserial
+- pyvisa
+- pyvisa-py
+- pyusb
+- pyserial
 
 ## Authors
 *visa_plug* was written by *Jonas Steinkamp <jonas@steinka.mp>*.
