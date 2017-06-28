@@ -12,7 +12,7 @@ install:
   - python setup.py install
 
 script:
- - coverage run --source denkovi_plug -m py.test
+ - coverage run --source visa_plug -m py.test
 
 after_success:
   - coveralls
