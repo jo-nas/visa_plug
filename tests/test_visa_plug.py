@@ -136,7 +136,7 @@ def test_it_gets_the_operation_complete_command(visa_device):
     assert visa_device.get_operation_complete() == "operation_complete"
 
 
-def test_it_enable_the_event_status(visa_device):
+def test_it_sets_the_operation_complete_register(visa_device):
     visa_device.set_operation_complete()
     assert visa_device.connection._instrument_buffer == "*OPC\n"
 
