@@ -31,7 +31,7 @@ class VisaPlug(plugs.BasePlug):
     def __init__(self, ident_code, timeout):
         self.rm = visa.ResourceManager("@py")
 
-        device = self.find_device(ident_code, timeout).next()
+        device = self.find_device(ident_code, timeout)[0]
 
         self.connection = self.rm.open_resource(device["port"], timeout=timeout)
         self.vendor = device["vendor"]
@@ -163,6 +163,7 @@ class VisaPlug(plugs.BasePlug):
             return x.replace("\n", "").replace("\r", "")
 
         rm = visa.ResourceManager("@py")
+        device_list = []
         for port in rm.list_resources():
             try:
                 device = rm.open_resource(port, timeout=timeout)
@@ -180,12 +181,16 @@ class VisaPlug(plugs.BasePlug):
                     idn[2] = ""
 
                 if any(ident_code in s for s in idn) or port is ident_code:
-                    yield {
+                    device_list.append({
                         'vendor': idn[0],
                         'device_name': idn[1],
                         'serial_number': idn[2],
                         'firmware_version': idn[3],
                         'port': port
-                    }
+                    })
             except:
                 continue
+        if len(device_list) > 0:
+            return device_list
+
+        raise VisaDeviceException("Device not found")
