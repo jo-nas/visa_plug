@@ -1,6 +1,5 @@
 # Visa Plug for Openhtf
----
-
+[![Build Status](https://travis-ci.org/jo-nas/visa_plug.svg?branch=master)](https://travis-ci.org/jo-nas/visa_plug) [![Coverage Status](https://coveralls.io/repos/github/jo-nas/visa_plug/badge.svg?branch=master)](https://coveralls.io/github/jo-nas/visa_plug?branch=master)
 
 ## Discription
 This Package contains some basic Visa Device functionality.
