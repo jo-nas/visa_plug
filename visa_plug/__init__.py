@@ -113,7 +113,7 @@ class VisaPlug(plugs.BasePlug):
         return self.query("*STB?")
 
     def get_status_byte(self):
-        self.stb()
+        return self.stb()
 
     # ------------------------------------------------------------------------------------------------------------------
     # event status
@@ -137,7 +137,7 @@ class VisaPlug(plugs.BasePlug):
             return self.query("*OPC?")
         self.write("*OPC")
 
-    def set_operation_complete_command(self):
+    def set_operation_complete(self):
         self.opc()
 
     def get_operation_complete(self):

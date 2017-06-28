@@ -21,12 +21,12 @@ class Instrument:
             "cls": 0,
             "rst": 0,
             "wai": 0,
-            "esr": 0,
-            "tst": 0,
-            "stb": 0,
-            "ese": 0,
-            "opc": 0,
-            "sre": 0,
+            "esr": "event_status_register",
+            "tst": "self_test",
+            "stb": "status_byte",
+            "ese": "is_enabled",
+            "opc": "operation_complete",
+            "sre": "service_request",
             "format:elements": "volt, curr\n"
         }
 

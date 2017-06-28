@@ -94,3 +94,57 @@ def test_it_gets_data_after_multiple_writings_and_reading_visa_device(visa_devic
 
 def test_it_gets_the_idn_string(visa_device):
     assert visa_device.get_identification() == "vendor,device_name,serial_number02,firmware_version\n"
+
+
+def test_it_sends_a_reset(visa_device):
+    visa_device.reset()
+    assert visa_device.connection._instrument_buffer == "*RST\n"
+
+
+def test_it_sends_a_clear_status_command(visa_device):
+    visa_device.clear_status_command()
+    assert visa_device.connection._instrument_buffer == "*CLS\n"
+
+
+def test_it_sends_a_wait_to_continue_command(visa_device):
+    visa_device.wait_to_continue()
+    assert visa_device.connection._instrument_buffer == "*WAI\n"
+
+
+def test_it_querys_the_event_status_register(visa_device):
+    assert visa_device.get_event_status_register() == "event_status_register"
+
+
+def test_it_sends_a_self_test_command(visa_device):
+    assert visa_device.self_test() == "self_test"
+
+
+def test_it_gets_the_status_byte(visa_device):
+    assert visa_device.get_status_byte() == "status_byte"
+
+
+def test_it_gets_the_event_status_enabled_bit(visa_device):
+    assert visa_device.is_event_status_enabled() == "is_enabled"
+
+
+def test_it_enable_the_event_status(visa_device):
+    visa_device.enable_event_status()
+    assert visa_device.connection._instrument_buffer == "*ESE\n"
+
+
+def test_it_gets_the_operation_complete_command(visa_device):
+    assert visa_device.get_operation_complete() == "operation_complete"
+
+
+def test_it_enable_the_event_status(visa_device):
+    visa_device.set_operation_complete()
+    assert visa_device.connection._instrument_buffer == "*OPC\n"
+
+
+def test_it_gets_service_request_enabled(visa_device):
+    assert visa_device.get_service_request_enabled() == "service_request"
+
+
+def test_enable_service_request(visa_device):
+    visa_device.enable_service_request()
+    assert visa_device.connection._instrument_buffer == "*SRE\n"
