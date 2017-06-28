@@ -2,7 +2,10 @@ class ResourceManager:
     def __init__(self, backend):
         self.resources = {}
         for i in range(20):
-            self.resources.update({"GPIB0::{:02d}::INSTR".format(i): i})
+            self.resources.update({"GPIB0::{:02d}::INSTR".format(i): i})#
+
+        self.resources.update({"GPIB0::42::INSTR": 42})  # sends only vendor, device_name, firmware_version on idn
+        self.resources.update({"GPIB0::43::INSTR": 43})  # throws a exception on init
 
     def list_resources(self):
         return self.resources.keys()
@@ -29,6 +32,12 @@ class Instrument:
             "sre": "service_request",
             "format:elements": "volt, curr\n"
         }
+
+        if serial_number == 42:
+            self.supported_messages["idn"] = "vendor,device_name,firmware_version\n"
+
+        if serial_number == 43:
+            raise Exception
 
     def close(self):
         return "closed"

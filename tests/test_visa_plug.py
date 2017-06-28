@@ -13,7 +13,7 @@ def test_it_returns_a_iterable():
 
 
 def test_it_returns_all_available_devices_if_no_parameter_is_given():
-    assert len(list(visa_plug.VisaPlug.find_device())) == 20
+    assert len(list(visa_plug.VisaPlug.find_device())) == 21
 
 
 def test_it_finds_the_device_by_serial():
@@ -21,10 +21,16 @@ def test_it_finds_the_device_by_serial():
 
 
 def test_it_finds_the_device_by_vendor():
-    assert len(list(visa_plug.VisaPlug.find_device("vendor"))) == 20
+    assert len(list(visa_plug.VisaPlug.find_device("vendor"))) == 21
 
 
 # Test VisaPlug constructor ====================================================
+def test_it_has_changed_serial_number_and_firmware_if_serial_number_not_exist():
+    visa_device = visa_plug.VisaPlug(ident_code="GPIB0::42::INSTR")
+    assert visa_device.serial_number == ""
+    assert visa_device.firmware_version == "firmware_version"
+
+
 @pytest.fixture
 def visa_device():
     return visa_plug.VisaPlug(ident_code="serial_number02")

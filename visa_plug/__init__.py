@@ -167,29 +167,28 @@ class VisaPlug(plugs.BasePlug):
         for port in rm.list_resources():
             try:
                 device = rm.open_resource(port, timeout=timeout)
-
                 response = cleanup(device.query("*IDN?"))
-
                 if response == "":
                     continue  # device don't exist
-
-                idn = response.split(",")
-
-                # device sends no serial number
-                if len(idn) <= 3:
-                    idn.append(idn[2])
-                    idn[2] = ""
-
-                if any(ident_code in s for s in idn) or port is ident_code:
-                    device_list.append({
-                        'vendor': idn[0],
-                        'device_name': idn[1],
-                        'serial_number': idn[2],
-                        'firmware_version': idn[3],
-                        'port': port
-                    })
             except:
                 continue
+
+            idn = response.split(",")
+
+            # device sends no serial number
+            if len(idn) == 3:
+                idn.append(idn[2])
+                idn[2] = ""
+            
+            if any(ident_code in s for s in idn) or port == ident_code:
+                device_list.append({
+                    'vendor': idn[0],
+                    'device_name': idn[1],
+                    'serial_number': idn[2],
+                    'firmware_version': idn[3],
+                    'port': port
+                })
+
         if len(device_list) > 0:
             return device_list
 
