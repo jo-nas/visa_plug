@@ -179,7 +179,7 @@ class VisaPlug(plugs.BasePlug):
             if len(idn) == 3:
                 idn.append(idn[2])
                 idn[2] = ""
-            
+
             if any(ident_code in s for s in idn) or port == ident_code:
                 device_list.append({
                     'vendor': idn[0],

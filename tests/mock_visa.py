@@ -6,6 +6,7 @@ class ResourceManager:
 
         self.resources.update({"GPIB0::42::INSTR": 42})  # sends only vendor, device_name, firmware_version on idn
         self.resources.update({"GPIB0::43::INSTR": 43})  # throws a exception on init
+        self.resources.update({"GPIB0::44::INSTR": 44})  # sends blank response on idn query
 
     def list_resources(self):
         return self.resources.keys()
@@ -38,6 +39,9 @@ class Instrument:
 
         if serial_number == 43:
             raise Exception
+        
+        if serial_number == 44:
+            self.supported_messages["idn"] = ""
 
     def close(self):
         return "closed"
