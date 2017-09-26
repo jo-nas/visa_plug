@@ -26,28 +26,28 @@ def test_it_finds_the_device_by_vendor():
 
 # Test VisaPlug constructor ====================================================
 def test_it_has_changed_serial_number_and_firmware_if_serial_number_not_exist():
-    visa_device = visa_plug.VisaPlug(ident_code="GPIB0::42::INSTR")
+    visa_device = visa_plug.VisaPlug(visa_ident_code="GPIB0::42::INSTR")
     assert visa_device.serial_number == ""
     assert visa_device.firmware_version == "firmware_version"
 
 
 @pytest.fixture
 def visa_device():
-    return visa_plug.VisaPlug(ident_code="serial_number02")
+    return visa_plug.VisaPlug(visa_ident_code="serial_number02")
 
 
 def test_it_raise_a_exception_if_no_device_was_found():
     with pytest.raises(visa_plug.VisaDeviceException):
-        visa_plug.VisaPlug(ident_code="wrong_string")
+        visa_plug.VisaPlug(visa_ident_code="wrong_string")
 
 
 def test_it_build_up_a_connection_selected_by_serial_number(visa_device):
-    visa_device = visa_plug.VisaPlug(ident_code="serial_number01")
+    visa_device = visa_plug.VisaPlug(visa_ident_code="serial_number01")
     assert visa_device.connection is not None
 
 
 def test_it_build_up_a_connection_selected_by_vendor():
-    visa_device = visa_plug.VisaPlug(ident_code="vendor")
+    visa_device = visa_plug.VisaPlug(visa_ident_code="vendor")
     assert visa_device.connection is not None
 
 

@@ -7,16 +7,15 @@ __author__ = 'Jonas Steinkamp'
 __email__ = 'jonas@steinka.mp'
 __version__ = '0.1.0'
 
-# TODO: Add Docstrings and Tests
-
+# TODO: Add Docstrings
 
 conf.declare(
-    'ident_code',
+    'visa_ident_code',
     description='identification code of the device. port or serial_number or device_name o vendor'
 )
 
 conf.declare(
-    'timeout',
+    'visa_timeout',
     default_value=60000,
     description='timeout for the device.'
 )
@@ -28,12 +27,12 @@ class VisaDeviceException(Exception):
 
 class VisaPlug(plugs.BasePlug):
     @conf.inject_positional_args
-    def __init__(self, ident_code, timeout):
+    def __init__(self, visa_ident_code, visa_timeout):
         self.rm = visa.ResourceManager("@py")
 
-        device = self.find_device(ident_code, timeout)[0]
+        device = self.find_device(visa_ident_code, visa_timeout)[0]
 
-        self.connection = self.rm.open_resource(device["port"], timeout=timeout)
+        self.connection = self.rm.open_resource(device["port"], timeout=visa_timeout)
         self.vendor = device["vendor"]
         self.device_name = device["device_name"]
         self.serial_number = device["serial_number"]
