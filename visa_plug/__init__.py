@@ -20,6 +20,12 @@ conf.declare(
     description='timeout for the device.'
 )
 
+conf.declare(
+    'visa_identification_string',
+    default_value='*IDN?',
+    description='timeout for the device.'
+)
+
 
 class VisaDeviceException(Exception):
     """A basic Visa Device Exception"""
@@ -27,10 +33,10 @@ class VisaDeviceException(Exception):
 
 class VisaPlug(plugs.BasePlug):
     @conf.inject_positional_args
-    def __init__(self, visa_ident_code, visa_timeout):
+    def __init__(self, visa_ident_code, visa_timeout, visa_identification_string):
         self.rm = visa.ResourceManager("@py")
 
-        device = self.find_device(visa_ident_code, visa_timeout)[0]
+        device = self.find_device(visa_ident_code, visa_timeout, visa_identification_string)[0]
 
         self.connection = self.rm.open_resource(device["port"], timeout=visa_timeout)
         self.vendor = device["vendor"]
@@ -54,8 +60,9 @@ class VisaPlug(plugs.BasePlug):
     # ------------------------------------------------------------------------------------------------------------------
     # identification
     # ------------------------------------------------------------------------------------------------------------------
-    def idn(self):
-        return self.query('*IDN?')
+    @conf.inject_positional_args
+    def idn(self, visa_identification_string):
+        return self.query(visa_identification_string)
 
     def get_identification(self):
         return self.idn()
@@ -157,7 +164,7 @@ class VisaPlug(plugs.BasePlug):
         self.sre()
 
     @staticmethod
-    def find_device(ident_code="", timeout=None):
+    def find_device(ident_code="", timeout=None, visa_identification_string="*IDN?"):
         def cleanup(x):
             return x.replace("\n", "").replace("\r", "")
 
@@ -166,7 +173,7 @@ class VisaPlug(plugs.BasePlug):
         for port in rm.list_resources():
             try:
                 device = rm.open_resource(port, timeout=timeout)
-                response = cleanup(device.query("*IDN?"))
+                response = cleanup(device.query(visa_identification_string))
                 if response == "":
                     continue  # device don't exist
             except:
